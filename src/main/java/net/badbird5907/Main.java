@@ -3,6 +3,8 @@ package net.badbird5907;
 import lombok.SneakyThrows;
 import oshi.SystemInfo;
 import oshi.hardware.*;
+import oshi.software.os.InternetProtocolStats;
+import oshi.software.os.OperatingSystem;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -25,13 +27,15 @@ public class Main {
         System.out.println("Creating log file (" + logFile + ")");
         logFile.createNewFile();
         ps = new PrintStream(logFile,"UTF-8");
+        SystemInfo si = new SystemInfo();
         print(date);
         print("Java Version: " + System.getProperty("java.version"));
         print("ComputerInfo Version: " + (Main.class.getPackage().getImplementationVersion() == null ? "DEV" : Main.class.getPackage().getImplementationVersion()));
         print("Running EXE Version: " + (System.getProperty("launch4j") != null));
+        print("Elevated: " + si.getOperatingSystem().isElevated());
         print("");
-        SystemInfo si = new SystemInfo();
         HardwareAbstractionLayer hal = si.getHardware();
+        print("----- Hardware Information -----");
         CentralProcessor cpu = hal.getProcessor();
         print("CPU Info");
         print(" - Max Frequency: " + humanReadableCPU(cpu.getMaxFreq()));
@@ -40,6 +44,8 @@ public class Main {
         print(" - Current Frequency: " + Arrays.toString(currentFreq.toArray(new String[0])));
         print(" - Physical Processors: " + cpu.getPhysicalProcessorCount());
         print(" - Logical Processors: " + cpu.getLogicalProcessorCount());
+        print(" - Interrupts: " + cpu.getInterrupts());
+        print(" - Uptime: " + si.getOperatingSystem().getSystemUptime());
         print("");
 
         GlobalMemory ram = hal.getMemory();
@@ -84,6 +90,8 @@ public class Main {
             }
             print("Power Sources");
             for (PowerSource powerSource : hal.getPowerSources()) {
+                if (powerSource.getVoltage() == -1 && powerSource.getAmperage() == 0.0d && !powerSource.isCharging() && !powerSource.isDischarging() && powerSource.getCycleCount() == -1)
+                    continue;
                 print(" - " + powerSource.getName());
                 print("  - Device Name: " + powerSource.getDeviceName());
                 print("  - Manufacturer: " + powerSource.getManufacturer());
@@ -119,7 +127,65 @@ public class Main {
             print("  - Codec: " + soundCard.getCodec());
             print("  - Driver Version: " + soundCard.getDriverVersion());
         }
+        print("");
+        ComputerSystem computerSystem = hal.getComputerSystem();
+        print("Computer System");
+        print(" - Hardware UUID: " + computerSystem.getHardwareUUID());
+        print(" - Manufacturer: " + computerSystem.getManufacturer());
+        print(" - Model: " + computerSystem.getModel());
+        print(" - Serial Number: " + computerSystem.getSerialNumber());
+        print(" - Base Board ");
+        print("  - Model: " + computerSystem.getBaseboard().getModel());
+        print("  - Manufacturer: " + computerSystem.getBaseboard().getManufacturer());
+        print("  - Version: " + computerSystem.getBaseboard().getVersion());
+        print("  - Serial Number: " + computerSystem.getBaseboard().getSerialNumber());
+        print(" - Firmware");
+        print("  - Name: " + computerSystem.getFirmware().getName());
+        print("  - Manufacturer: " + computerSystem.getFirmware().getManufacturer());
+        print("  - Version: " + computerSystem.getFirmware().getVersion());
+        print("  - Description: " + computerSystem.getFirmware().getDescription());
+        print("  - Release date: " + computerSystem.getFirmware().getReleaseDate());
+        print("");
+        print("----- OS Information -----");
+        OperatingSystem os = si.getOperatingSystem();
+        print(" - Family: " + os.getFamily());
+        print(" - Version: " + os.getVersionInfo().getVersion());
+        print(" - Build Number: " + os.getVersionInfo().getBuildNumber());
+        print(" - Code Name: " + os.getVersionInfo().getCodeName());
+        print(" - Manufacturer: " + os.getManufacturer());
+        print(" - Uptime: " + os.getSystemUptime());
+        print(" - Processes: " + os.getProcesses().size());
+        print(" - Boot Time: " + new Date(os.getSystemBootTime()));
+        print(" - Bitness: " + os.getBitness());
+        print(" Internet Stats");
+        InternetProtocolStats ips = os.getInternetProtocolStats();
+        print("  - TCP v4");
+        printTcpStats(ips.getTCPv4Stats());
+        print("  - TCP v6");
+        printTcpStats(ips.getTCPv6Stats());
+        print("  - UDP v4");
+        printUdpStats(ips.getUDPv4Stats());
+        print("  - UDP v6");
+        printUdpStats(ips.getUDPv6Stats());
         ps.close();
+    }
+    public static void printUdpStats(InternetProtocolStats.UdpStats udpStats){
+        print("  - Datagrams Sent: " + udpStats.getDatagramsSent());
+        print("  - Datagrams Received: " + udpStats.getDatagramsReceived());
+        print("  - Datagrams Received-Errors: " + udpStats.getDatagramsReceivedErrors());
+        print("  - Datagrams No Port: " + udpStats.getDatagramsNoPort());
+    }
+    public static void printTcpStats(InternetProtocolStats.TcpStats tcpStats){
+        print("   - Active Connections: " + tcpStats.getConnectionsActive());
+        print("   - Established Connections: " + tcpStats.getConnectionsEstablished());
+        print("   - Failed Connections: " + tcpStats.getConnectionFailures());
+        print("   - Reset Connections: " + tcpStats.getConnectionsReset());
+        print("   - Passive Connections: " + tcpStats.getConnectionsPassive());
+        print("   - In Errors: " + tcpStats.getInErrors());
+        print("   - Out Resets: " + tcpStats.getOutResets());
+        print("   - Segments Received: " + tcpStats.getSegmentsReceived());
+        print("   - Segments Re-Transmitted: " + tcpStats.getSegmentsRetransmitted());
+        print("   - Segments Sent: " + tcpStats.getSegmentsSent());
     }
     public static String getDate(){
         SimpleDateFormat df = new SimpleDateFormat("MM-dd-yyy");
@@ -149,6 +215,7 @@ public class Main {
             }
         }
     }
+    //bytes -> kilobytes, megabytes, gigabyte, terabyte, petabyte, exabyte, zettabyte, yottabyte
     private static final long kilo = 1024,mega = kilo * kilo,giga = mega * kilo, tera = giga * kilo;
     public static String getSize(long size) {
         String s = "";
