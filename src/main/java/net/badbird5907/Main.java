@@ -46,19 +46,19 @@ public class Main {
         print(" - Family: "  + processorIdentifier.getFamily());
         print(" - Model: "  + processorIdentifier.getModel());
         print(" - Vendor: "  + processorIdentifier.getVendor());
-        print(" - Vendor Freq: "  + FormatUtil.formatHertz(processorIdentifier.getVendorFreq()));
         print(" - Processor ID: "  + processorIdentifier.getProcessorID());
         print(" - Stepping: "  + processorIdentifier.getStepping());
         print(" - Identifier: " + processorIdentifier.toString());
         print(" - Microarchitecture: " + processorIdentifier.getMicroarchitecture());
         print(" - Max Frequency: " + FormatUtil.formatHertz(cpu.getMaxFreq()));
+        print(" - Vendor Freq: "  + FormatUtil.formatHertz(processorIdentifier.getVendorFreq()));
         List<String> currentFreq = new ArrayList<>();
         for (long l : cpu.getCurrentFreq()) currentFreq.add(FormatUtil.formatHertz(l));
         print(" - Current Frequency: " + Arrays.toString(currentFreq.toArray(new String[0])));
         print(" - Physical Processors: " + cpu.getPhysicalProcessorCount());
         print(" - Logical Processors: " + cpu.getLogicalProcessorCount());
         print(" - Interrupts: " + cpu.getInterrupts());
-        print(" - Uptime: " + si.getOperatingSystem().getSystemUptime());
+        print(" - Uptime (Minutes): " + si.getOperatingSystem().getSystemUptime());
         print("");
 
         GlobalMemory ram = hal.getMemory();
