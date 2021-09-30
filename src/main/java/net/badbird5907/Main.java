@@ -42,6 +42,15 @@ public class Main {
         CentralProcessor cpu = hal.getProcessor();
         CentralProcessor.ProcessorIdentifier processorIdentifier = cpu.getProcessorIdentifier();
         print("CPU Info");
+        print(" - Name: " + processorIdentifier.getName());
+        print(" - Family: "  + processorIdentifier.getFamily());
+        print(" - Model: "  + processorIdentifier.getModel());
+        print(" - Vendor: "  + processorIdentifier.getVendor());
+        print(" - Vendor Freq: "  + FormatUtil.formatHertz(processorIdentifier.getVendorFreq()));
+        print(" - Processor ID: "  + processorIdentifier.getProcessorID());
+        print(" - Stepping: "  + processorIdentifier.getStepping());
+        print(" - Identifier: " + processorIdentifier.toString());
+        print(" - Microarchitecture: " + processorIdentifier.getMicroarchitecture());
         print(" - Max Frequency: " + FormatUtil.formatHertz(cpu.getMaxFreq()));
         List<String> currentFreq = new ArrayList<>();
         for (long l : cpu.getCurrentFreq()) currentFreq.add(FormatUtil.formatHertz(l));
@@ -49,8 +58,6 @@ public class Main {
         print(" - Physical Processors: " + cpu.getPhysicalProcessorCount());
         print(" - Logical Processors: " + cpu.getLogicalProcessorCount());
         print(" - Interrupts: " + cpu.getInterrupts());
-        print(" - Identifier: " + processorIdentifier.toString());
-        print(" - Microarchitecture: " + processorIdentifier.getMicroarchitecture());
         print(" - Uptime: " + si.getOperatingSystem().getSystemUptime());
         print("");
 
