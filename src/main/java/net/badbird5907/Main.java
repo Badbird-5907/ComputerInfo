@@ -5,6 +5,9 @@ import oshi.SystemInfo;
 import oshi.hardware.*;
 import oshi.software.os.InternetProtocolStats;
 import oshi.software.os.OperatingSystem;
+import oshi.util.FormatUtil;
+
+import static oshi.util.FormatUtil.formatBytes;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -38,9 +41,9 @@ public class Main {
         print("----- Hardware Information -----");
         CentralProcessor cpu = hal.getProcessor();
         print("CPU Info");
-        print(" - Max Frequency: " + humanReadableCPU(cpu.getMaxFreq()));
+        print(" - Max Frequency: " + FormatUtil.formatHertz(cpu.getMaxFreq()));
         List<String> currentFreq = new ArrayList<>();
-        for (long l : cpu.getCurrentFreq()) currentFreq.add(humanReadableCPU(l));
+        for (long l : cpu.getCurrentFreq()) currentFreq.add(FormatUtil.formatHertz(l));
         print(" - Current Frequency: " + Arrays.toString(currentFreq.toArray(new String[0])));
         print(" - Physical Processors: " + cpu.getPhysicalProcessorCount());
         print(" - Logical Processors: " + cpu.getLogicalProcessorCount());
@@ -50,18 +53,18 @@ public class Main {
 
         GlobalMemory ram = hal.getMemory();
         print("RAM Info");
-        print(" - Total RAM: " + getSize(ram.getTotal()));
-        print(" - Avaliable RAM: " + getSize(ram.getAvailable()));
+        print(" - Total RAM: " + formatBytes(ram.getTotal()));
+        print(" - Avaliable RAM: " + formatBytes(ram.getAvailable()));
         print("");
-        print(" - Virtual RAM MAX: " + getSize(ram.getVirtualMemory().getVirtualMax()));
-        print(" - Virtual RAM In Use: " + getSize(ram.getVirtualMemory().getVirtualInUse()));
-        print(" - Virtual RAM Swap Total: " + getSize(ram.getVirtualMemory().getSwapTotal()));
+        print(" - Virtual RAM MAX: " + formatBytes(ram.getVirtualMemory().getVirtualMax()));
+        print(" - Virtual RAM In Use: " + formatBytes(ram.getVirtualMemory().getVirtualInUse()));
+        print(" - Virtual RAM Swap Total: " + formatBytes(ram.getVirtualMemory().getSwapTotal()));
         print("");
         print("Graphics Card(s)");
         List<GraphicsCard> graphicsCards = hal.getGraphicsCards();
         for (GraphicsCard graphicsCard : graphicsCards) {
             print(" - " + graphicsCard.getName());
-            print("  - VRam: " + getSize(graphicsCard.getVRam()));
+            print("  - VRam: " + formatBytes(graphicsCard.getVRam()));
             print("  - Vendor: " + graphicsCard.getVendor());
             print("  - Version: " + graphicsCard.getVersionInfo());
             print("  - Device ID: " + graphicsCard.getDeviceId());
@@ -71,15 +74,15 @@ public class Main {
         for (HWDiskStore diskStore : hal.getDiskStores()) {
             print(" - " + diskStore.getName());
             print("  - Model: " + diskStore.getModel());
-            print("  - Size: " + diskStore.getSize());
+            print("  - Size: " + formatBytes(diskStore.getSize()));
             print("  - Reads: " + diskStore.getReads());
             print("  - Writes: " + diskStore.getWrites());
-            print("  - Reads (bytes): " + getSize(diskStore.getReadBytes()));
-            print("  - Writes (bytes): " + getSize(diskStore.getWriteBytes()));
+            print("  - Reads (bytes): " + formatBytes(diskStore.getReadBytes()));
+            print("  - Writes (bytes): " + formatBytes(diskStore.getWriteBytes()));
             print("  - Partitions: " + diskStore.getPartitions().size());
             for (HWPartition partition : diskStore.getPartitions()) {
                 print("   - " + partition.getName());
-                print("    - Size: " + partition.getSize());
+                print("    - Size: " + formatBytes(partition.getSize()));
                 print("    - Type: " + partition.getType());
                 print("    - ID: " + partition.getUuid());
                 print("    - Major: " + partition.getMajor());
@@ -168,7 +171,7 @@ public class Main {
         print("  - UDP v6");
         printUdpStats(ips.getUDPv6Stats());
         print("----- Process Information -----");
-        
+        Processes.printProcesses(si);
         ps.close();
     }
     public static void printUdpStats(InternetProtocolStats.UdpStats udpStats){
@@ -219,23 +222,4 @@ public class Main {
     }
     //bytes -> kilobytes, megabytes, gigabyte, terabyte, petabyte, exabyte, zettabyte, yottabyte
     private static final long kilo = 1024,mega = kilo * kilo,giga = mega * kilo, tera = giga * kilo;
-    public static String getSize(long size) {
-        String s = "";
-        double kb = (double)size / kilo;
-        double mb = kb / kilo;
-        double gb = mb / kilo;
-        double tb = gb / kilo;
-        if(size < kilo) {
-            s = size + " Bytes";
-        } else if(size >= kilo && size < mega) {
-            s =  String.format("%.2f", kb) + " KB";
-        } else if(size >= mega && size < giga) {
-            s = String.format("%.2f", mb) + " MB";
-        } else if(size >= giga && size < tera) {
-            s = String.format("%.2f", gb) + " GB";
-        } else if(size >= tera) {
-            s = String.format("%.2f", tb) + " TB";
-        }
-        return s;
-    }
 }
