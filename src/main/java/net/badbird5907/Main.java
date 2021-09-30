@@ -40,6 +40,7 @@ public class Main {
         HardwareAbstractionLayer hal = si.getHardware();
         print("----- Hardware Information -----");
         CentralProcessor cpu = hal.getProcessor();
+        CentralProcessor.ProcessorIdentifier processorIdentifier = cpu.getProcessorIdentifier();
         print("CPU Info");
         print(" - Max Frequency: " + FormatUtil.formatHertz(cpu.getMaxFreq()));
         List<String> currentFreq = new ArrayList<>();
@@ -48,6 +49,8 @@ public class Main {
         print(" - Physical Processors: " + cpu.getPhysicalProcessorCount());
         print(" - Logical Processors: " + cpu.getLogicalProcessorCount());
         print(" - Interrupts: " + cpu.getInterrupts());
+        print(" - Identifier: " + processorIdentifier.toString());
+        print(" - Microarchitecture: " + processorIdentifier.getMicroarchitecture());
         print(" - Uptime: " + si.getOperatingSystem().getSystemUptime());
         print("");
 
