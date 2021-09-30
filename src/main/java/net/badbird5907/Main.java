@@ -167,6 +167,8 @@ public class Main {
         printUdpStats(ips.getUDPv4Stats());
         print("  - UDP v6");
         printUdpStats(ips.getUDPv6Stats());
+        print("----- Process Information -----");
+        
         ps.close();
     }
     public static void printUdpStats(InternetProtocolStats.UdpStats udpStats){
