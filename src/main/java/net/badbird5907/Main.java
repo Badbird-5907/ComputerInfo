@@ -93,8 +93,10 @@ public class Main {
             }
             print("Power Sources");
             for (PowerSource powerSource : hal.getPowerSources()) {
-                if (powerSource.getVoltage() == -1 && powerSource.getAmperage() == 0.0d && !powerSource.isCharging() && !powerSource.isDischarging() && powerSource.getCycleCount() == -1)
+                if (powerSource.getVoltage() == -1 && powerSource.getAmperage() == 0.0d && !powerSource.isCharging() && !powerSource.isDischarging() && powerSource.getCycleCount() == -1){
+                    print(" - Unknown");
                     continue;
+                }
                 print(" - " + powerSource.getName());
                 print("  - Device Name: " + powerSource.getDeviceName());
                 print("  - Manufacturer: " + powerSource.getManufacturer());
@@ -112,6 +114,7 @@ public class Main {
                 print("  - Remaining Percent: " + powerSource.getRemainingCapacityPercent());
                 print("  - Chemistry: " + powerSource.getChemistry());
             }
+            print("");
             print("Sensors");
             Sensors sensors = hal.getSensors();
             print(" - CPU Temp: " + sensors.getCpuTemperature());

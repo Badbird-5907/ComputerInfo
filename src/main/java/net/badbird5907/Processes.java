@@ -7,10 +7,8 @@ import static net.badbird5907.Main.print;
 
 public class Processes {
     public static void printProcesses(SystemInfo systemInfo){
-
         print("-----------------------------------------------------------------------------");
         print(String.format("%10s %30s %20s %5s %5s", "PID", "CPU %", "Process Name", "%MEM", "Threads"));
-        print("");
         print("-----------------------------------------------------------------------------");
        /*
         for(Student student: students){
