@@ -237,11 +237,11 @@ public class Main {
 
 	public static void printUSBInfoTree(UsbDevice usbDevice, String pre) {
 		print(pre + " - " + usbDevice.getName());
-		print(pre + " - Serial Number: " + usbDevice.getSerialNumber());
-		print(pre + " - Vendor: " + usbDevice.getVendor());
-		print(pre + " - Device ID: " + usbDevice.getUniqueDeviceId());
-		print(pre + " - Product ID: " + usbDevice.getProductId());
-		print(pre + " - Vendor ID: " + usbDevice.getVendorId());
+		print(pre + "  - Serial Number: " + usbDevice.getSerialNumber());
+		print(pre + "  - Vendor: " + usbDevice.getVendor());
+		print(pre + "  - Device ID: " + usbDevice.getUniqueDeviceId());
+		print(pre + "  - Product ID: " + usbDevice.getProductId());
+		print(pre + "  - Vendor ID: " + usbDevice.getVendorId());
 		if ((usbDevice.getConnectedDevices() != null) && !usbDevice.getConnectedDevices().isEmpty())
 			for (UsbDevice connectedDevice : usbDevice.getConnectedDevices())
 				printUSBInfoTree(connectedDevice, pre + " ");
